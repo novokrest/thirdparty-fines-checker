@@ -1,0 +1,33 @@
+check-period: PT1S
+availability-message-suffix: 'работает.'
+unavailability-message-suffix: 'недоступен!'
+should-send-availability-message: true
+
+gibdd:
+  url: 'https://xn--90adear.xn--p1ai/check/fines#%D0%9A385%D0%A1%D0%95+190+50%D1%85%D0%BC916004'
+#  url: 'https://xn--90adear.xn--p1ai/check/fines'
+  grz-number:
+    id: checkFinesRegnum
+    value: 'К385СЕ'
+  grz-region:
+    id: checkFinesRegreg
+    value: '190'
+  sts:
+    id: checkFinesStsnum
+    value: '50хм916004'
+  search-button:
+    css-selector: "[class='check-space check-for']"
+  search-wait-timeout: PT2M
+  success-search-text: 'Штраф №'
+
+shtrafy-online:
+  authorize-url: 'https://shtrafy-gibdd.ru/frontend/authorize'
+  api-url: 'https://api.shtrafy-gibdd.ru/api.php'
+  request-timeout: PT1M
+  grz-number: 'К385СЕ'
+  grz-region: '190'
+  sts: '50хм916004'
+
+telegram:
+  chat-id: -1001285610353
+  bot-token: '841591092:AAF7CWGPEBu0ztQZCZK7-Yc63gby6tCkwxs'

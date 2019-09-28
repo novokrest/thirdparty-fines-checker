@@ -1,0 +1,20 @@
+FROM selenium/standalone-chrome
+
+RUN mkdir /home/seluser/app
+COPY fineschecker/build/libs/fineschecker-1.0.0.jar  /home/seluser/app/bin.jar
+COPY drivers/chromedriver_linux_77 /home/seluser/app/chromedriver
+COPY run.sh /home/seluser/app
+COPY machine-id /etc/machine-id
+RUN sudo chown -R seluser /home/seluser/app
+RUN sudo chown seluser:seluser -R /opt
+RUN sudo chmod 4755 /opt/google/chrome/chrome-sandbox
+# RUN echo 'deb mirror://mirrors.ubuntu.com/mirrors.txt precise main restricted universe multiverse' | sudo tee -a /etc/apt/sources.list
+# RUN echo 'deb mirror://mirrors.ubuntu.com/mirrors.txt precise-updates main restricted universe multiverse' | sudo tee -a /etc/apt/sources.list
+# RUN echo 'deb mirror://mirrors.ubuntu.com/mirrors.txt precise-backports main restricted universe multiverse' | sudo tee -a /etc/apt/sources.list
+# RUN echo 'deb mirror://mirrors.ubuntu.com/mirrors.txt precise-security main restricted universe multiverse' | sudo tee -a /etc/apt/sources.list
+# RUN sudo apt-get update
+# RUN sudo apt-get install vim
+# RUN sudo apt-get install node-less
+WORKDIR /home/seluser/app
+CMD ["java", "-jar", "-Dwebdriver.chrome.driver=chromedriver", "-Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2", "bin.jar"]
+

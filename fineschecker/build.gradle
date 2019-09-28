@@ -1,0 +1,66 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'com.github.johnrengelman.shadow' version '4.0.3'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    jcenter()
+}
+
+ext {
+    mainClassName = 'ru.fines.tools.fineschecker.App'
+    shadowJarVersion = project.findProperty('buildShadowJarVersion') ?: project.version
+    shadowJarName = "${project.findProperty('buildShadowJarName') ?: project.name}-${shadowJarVersion}.jar"
+    buildTime = project.findProperty('buildTime') ?: java.time.LocalDateTime.now()
+    buildBy = project.findProperty('buildBy') ?: System.getProperty('user.name')
+    buildNumber = project.findProperty('buildNumber') ?: '0'
+    buildRevision = project.findProperty('buildRevision') ?: 'revision'
+    buildBranch = project.findProperty('buildBranch') ?: 'branch'
+    targetJDKVersion = project.findProperty('targetJDKVersion') ?: System.properties['java.specification.version']
+}
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+compileJava.options.encoding = 'UTF-8'
+
+dependencies {
+    implementation'com.github.pengrad:java-telegram-bot-api:4.4.0'
+    implementation("org.seleniumhq.selenium:selenium-java:$seleniumVersion") {
+        exclude group: 'com.google.guava', module: 'guava'
+    }
+    implementation "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion"
+    implementation 'org.apache.logging.log4j:log4j-api:2.7'
+    implementation 'org.apache.logging.log4j:log4j-core:2.7'
+    implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.7'
+    implementation('com.google.inject:guice:4.2.2') {
+        exclude group: 'com.google.guava', module: 'guava'
+    }
+    implementation 'com.google.guava:guava:25.0-jre'
+
+    implementation 'commons-io:commons-io:2.6'
+
+    testImplementation 'org.testng:testng:6.8'
+}
+
+shadowJar {
+    zip64 true
+    mergeServiceFiles()
+    manifest {
+        attributes 'Main-Class': "${mainClassName}",
+                'Name': project.name,
+                'Specification-Version': project.version,
+                'Implementation-Version': "${buildBranch}-${buildRevision}",
+                'Built-By': buildBy,
+                'Build-Number': buildNumber,
+                'Build-Time': buildTime,
+                'Source-Compatibility': project.sourceCompatibility,
+                'Target-Compatibility': project.targetCompatibility
+    }
+    archiveFileName = shadowJarName
+}
+
+build.dependsOn += shadowJar

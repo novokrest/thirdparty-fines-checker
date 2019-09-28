@@ -1,0 +1,58 @@
+def artifactory_user="admin"
+def artifactory_password="password"
+def artifactory_contextUrl="http://artifactory-0.ru-central1.internal:8081/artifactory"
+
+buildscript {
+    System.setProperty("artifactory-user", "admin")
+    System.setProperty("artifactory-password", "password")
+    repositories {
+        jcenter()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        maven {
+            url 'http://artifactory-0.ru-central1.internal:8081/artifactory/libs-snapshot'
+            credentials {
+                username = System.getProperty("artifactory-user")
+                password = System.getProperty("artifactory-password")
+            }
+        }
+
+    }
+    dependencies {
+        //Check for the latest version here: http://plugins.gradle.org/plugin/com.jfrog.artifactory
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4+"
+    }
+}
+
+allprojects {
+    apply plugin: org.jfrog.gradle.plugin.artifactory.ArtifactoryPlugin
+}
+
+artifactory {
+    contextUrl = "${artifactory_contextUrl}"   //The base Artifactory URL if not overridden by the publisher/resolver
+    publish {
+        repository {
+            repoKey = 'libs-snapshot-local'
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+            maven = true
+
+        }
+        defaults {
+            publications ('mavenJava')
+            publishBuildInfo = true   //Publish build-info to Artifactory (true by default)
+            publishArtifacts = true   //Publish artifacts to Artifactory (true by default)
+            publishPom = true   //Publish generated POM files to Artifactory (true by default).
+        }
+    }
+    resolve {
+        repository {
+            repoKey = 'libs-snapshot'
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+            maven = true
+
+        }
+    }
+}
